@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini photo album</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: 'Lobster', cursive;
+        }
+        
+        .title {
+            color: white;
+            font-size: 30px;
+            text-align: center;
+            margin: 15px 5px 0px 5px;
+        }
+        
+        .container {
+            /* column-count: 3; */
+            margin: 15px 40px 20px 40px;
+            /* column-width: 300px; */
+            columns: 300px 3;
+        }
+        
+        img {
+            width: 100%;
+            margin: 5px;
+            transition: 0.5s;
+        }
+        
+        img:hover {}
+        /* table part */
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+        
+        table {
+            width: 80%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+        
+        .table tr,
+        .table th,
+        .table td {
+            padding: 10px 15px;
+            border: 1px solid black;
+        }
+        /* .table tbody tr:nth-child(odd) {
+            background-color: yellow;
+        } */
+        
+        .table tr:hover {
+            background-color: #eeeeee99;
+        }
+        
+        .api_image {
+            width: 70px;
+        }
+        
+        .api_image:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+        
+        .card {
+            width: 65%;
+            margin: 50px auto 0;
+            box-shadow: 1px 1px 10px #4a4a4a30;
+            height: 200px;
+        }
+        
+        .card-img {
+            margin-left: 5px;
+            width: 80px;
+            padding: 5px;
+        }
+        
+        .info {
+            width: 200px;
+            display: inline-block;
+            margin-left: 50px;
+            padding: 0px 9px;
+        }
+        
+        .row:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card" id="card">
+
+    </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Rating</th>
+                    <th>Image</th>
+                </tr>
+            </thead>
+            <tbody id="page">
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function alertMessage() {
+            console.log("hello there");
+        }
+        let card = document.getElementById("card");
+        let page = document.getElementById("page");
+        card.style.display = "none";
+
+        let list = "";
+
+        let callApi = async() => {
+            let res = await fetch("https://fakestoreapi.com/products", {
+                method: "GET",
+                headers: {
+                    "content-Type": "application/json",
+
+                }
+            });
+            let jsonRes = await res.json();
+            console.log(jsonRes);
+
+            for (let i = 0; i < jsonRes.length; i++) {
+                list += ` <tr onclick = "detail(${jsonRes[i].id})"  class="row">
+                    <td>${ jsonRes[i].id }</td>
+                    <td>${jsonRes[i].title}</td>
+                    <td>${jsonRes[i].price}$</td>
+                    <td>${jsonRes[i].rating.rate}</td>
+                    <td><a href="${jsonRes[i].image}" target="_blink"> <img src="${jsonRes[i].image}" class="api_image"> </a></td>
+                </tr> `;
+            }
+            page.innerHTML = list;
+        }
+
+        callApi();
+
+        function detail(id) {
+            fetch("https://fakestoreapi.com/products/" + id)
+                .then((response) => response.json())
+                .then((data) => {
+                    card.innerHTML = ` <img src="${data.image}" alt="" class="card-img">
+        <div class="info">
+            <h3>${data.title}</h3>
+            <h4>${data.price} $</h4>
+            <h4>${data.rating.rate}</h4>
+        </div>`;
+                    card.style.display = "block";
+
+                });
+        }
+    </script>
+</body>
+
+</html>
